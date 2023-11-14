@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { Like } from 'typeorm/find-options/operator/Like';
-import { Album } from './etities/album.entity';
+import { Album } from './entities/album.entity';
 
 @Controller('albums')
 export class AlbumsController {
@@ -20,13 +20,11 @@ export class AlbumsController {
 
   @Post()
   create(@Body() album: Partial<Album>) {
-    Logger.log(album);
     return this.albumsService.create(album);
   }
 
   @Patch(':id')
   update(@Param('id') id: number, @Body() album: Partial<Album>) {
-    Logger.log(album);
     return this.albumsService.update(id, album);
   }
 
@@ -36,16 +34,16 @@ export class AlbumsController {
     options: {
       take?: number;
       skip?: number;
-      id?: number;
       title?: string;
     },
   ) {
     const albums = this.albumsService.findAll({
       take: options.take,
       skip: options.skip,
-      where: [{ id: options.id }, { title: Like('%' + options.title + '%') }],
+      where: options?.title
+        ? [{ title: Like('%' + options.title + '%') }]
+        : undefined,
     });
-    Logger.log(albums);
     return albums;
   }
 

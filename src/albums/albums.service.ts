@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Album } from './etities/album.entity';
+import { Album } from './entities/album.entity';
 import {
   FindManyOptions,
   FindOneOptions,
