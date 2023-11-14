@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Album } from './etities/album.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
@@ -11,8 +11,8 @@ export class AlbumsService {
     Logger.log('AlbumsService initialized');
   }
 
-  findAll(where: { take: number; skip: number }): Promise<Album[]> {
+  findAll(options: FindManyOptions<Album>): Promise<Album[]> {
     Logger.log('AlbumsService:findAll');
-    return this.albumRepository.find(where);
+    return this.albumRepository.find(options);
   }
 }
