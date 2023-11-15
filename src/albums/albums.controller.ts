@@ -11,13 +11,11 @@ import {
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { Album } from './entities/album.entity';
-import { DataSource } from 'typeorm';
 
 @Controller('albums')
 export class AlbumsController {
   constructor(
     private readonly albumsService: AlbumsService,
-    private readonly datasource: DataSource,
   ) {
     Logger.log('Albums Controller initialized');
   }

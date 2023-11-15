@@ -1,13 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Album } from './entities/album.entity';
-import {
-  DataSource,
-  InsertResult,
-  Repository,
-  SelectQueryBuilder,
-  UpdateResult,
-} from 'typeorm';
+import { DataSource, InsertResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
@@ -26,19 +20,17 @@ export class AlbumsService {
     return this.albumRepository.update(id, album);
   }
 
-  findAll(
-    take?: number,
-    skip?: number,
-    title?: string,
-  ): SelectQueryBuilder<Album> {
+  findAll(take?: number, skip?: number, title?: string): Promise<Album[]> {
     return this.datasource
       .createQueryBuilder(Album, 'album')
-      .andWhere('album.Title LIKE :title', {
-        title: '%' + title ? title + '%' : '',
-      })
+      .andWhere(
+        'album.Title LIKE :title',
+        !!title ? { title: '%' + title + '%' } : { title: '%' },
+      )
       .take(take)
       .skip(skip)
-      .innerJoinAndSelect('album.artist', 'artist');
+      .innerJoinAndSelect('album.artist', 'artist')
+      .getMany();
   }
 
   findOne(id: number): Promise<Album> {
