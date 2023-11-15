@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Artist } from 'src/artists/entities/artist.entity';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Album')
 export class Album {
@@ -8,6 +9,6 @@ export class Album {
   @Column({ type: 'varchar', name: 'Title', length: 160 })
   title: string;
 
-  @Column({ type: 'int', name: 'ArtistId' })
-  artistId: number;
+  @ManyToOne(() => Artist, (artist) => artist.albums)
+  artist: Artist;
 }

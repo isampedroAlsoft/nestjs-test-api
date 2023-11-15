@@ -9,12 +9,15 @@ import {
   Query,
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
-import { Like } from 'typeorm/find-options/operator/Like';
 import { Album } from './entities/album.entity';
+import { DataSource } from 'typeorm';
 
 @Controller('albums')
 export class AlbumsController {
-  constructor(private readonly albumsService: AlbumsService) {
+  constructor(
+    private readonly albumsService: AlbumsService,
+    private readonly datasource: DataSource,
+  ) {
     Logger.log('Albums Controller initialized');
   }
 
@@ -37,18 +40,23 @@ export class AlbumsController {
       title?: string;
     },
   ) {
-    const albums = this.albumsService.findAll({
-      take: options.take,
-      skip: options.skip,
-      where: options?.title
-        ? [{ title: Like('%' + options.title + '%') }]
-        : undefined,
-    });
-    return albums;
+    const albumsWithArtist = this.datasource
+      .createQueryBuilder(Album, 'album')
+      .andWhere('album.Title LIKE :title', {
+        title: '%' + options.title ? options.title + '%' : '',
+      })
+      .take(options.take)
+      .skip(options.skip)
+      .innerJoinAndSelect('album.artist', 'artist');
+    return albumsWithArtist.getMany();
   }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.albumsService.findAll({ where: { id } });
+    return this.datasource
+      .createQueryBuilder(Album, 'album')
+      .andWhere('album.AlbumId = :id', { id })
+      .innerJoinAndSelect('album.artist', 'artist')
+      .getOne();
   }
 }
