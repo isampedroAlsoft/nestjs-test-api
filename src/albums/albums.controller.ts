@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   Body,
   Controller,
@@ -40,23 +41,11 @@ export class AlbumsController {
       title?: string;
     },
   ) {
-    const albumsWithArtist = this.datasource
-      .createQueryBuilder(Album, 'album')
-      .andWhere('album.Title LIKE :title', {
-        title: '%' + options.title ? options.title + '%' : '',
-      })
-      .take(options.take)
-      .skip(options.skip)
-      .innerJoinAndSelect('album.artist', 'artist');
-    return albumsWithArtist.getMany();
+    return this.albumsService.findAll(options.take, options.skip, options.title);
   }
 
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.datasource
-      .createQueryBuilder(Album, 'album')
-      .andWhere('album.AlbumId = :id', { id })
-      .innerJoinAndSelect('album.artist', 'artist')
-      .getOne();
+    return this.albumsService.findOne(id);
   }
 }
